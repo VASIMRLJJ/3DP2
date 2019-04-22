@@ -83,12 +83,17 @@ class Printer:
             except:
                 continue
 
-                if line.startswith(b"T:"):
-                    line = line.decode()
-                    res = re.findall("T: ?([\d\.]+) E: ?([\d\.]+) B: ?([\d\.]+)", line)
-                    self.t1 = res[0]
-                    self.e = res[1]
-                    self.t3 = res[2]
+            if line.startswith(b"T:"):
+                line1 = line.decode()
+                if 'B:' in line1:
+                    res = re.findall("T: ?([\d\.]+) E: ?([\d\.]+) B: ?([\d\.]+)", line1)
+                    self.t1 = res[0][0]
+                    self.e = res[0][1]
+                    self.t3 = res[0][2]
+                else:
+                    res = re.findall("T: ?([\d\.]+) E: ?([\d\.]+)", line1)
+                    self.t1 = res[0][0]
+                    self.e = res[0][1]
 
             if b"ok" in line:
                 self._command_received = True
@@ -99,10 +104,11 @@ if __name__ == '__main__':
     ret = False
     while not ret:
         print('connecting\n'+str(ret))
-        ret = p.connect()
+        ret = p.connect(250000)
         if ret:
             break
         sleep(5)
     while True:
-        print(p.read_data())
+        print(p.t1)
+        print(p.t3)
         sleep(1)

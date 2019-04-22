@@ -121,7 +121,8 @@ class Uploader:
                 if 'EID' in data222.keys() and 'IDE' in data222.keys():
                     if data222['IDE'] != 'OK':
                         return
-                    data333 = {'EID': self.eid, 'I': data2['I'], 'IS': 'success'}  # self.p.execute()
+                    data33 = p.sendCommand(data2['I'])
+                    data333 = {'EID': self.eid, 'I': data2['I'], 'IS': data33}
                     self.sock.send(json.dumps(data333).encode('ascii'))
 
 

@@ -102,4 +102,4 @@ if __name__ == '__main__':
         p.connect(int(settings['baud_rate']))
         u.connect(settings['ip'], settings['eid'], settings['pw'])
         u.loop_start()
-    app.run(host='127.0.0.1', port=8080)
+    app.run(host='127.0.0.1', port=80)
