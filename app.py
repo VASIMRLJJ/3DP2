@@ -87,7 +87,18 @@ if __name__ == '__main__':
     if os.path.isfile('settings.txt'):
         with open('settings.txt', 'r') as f:
             settings = eval(f.read())
-        print(settings)
+        profile = pywifi.Profile()
+        profile.ssid = settings['ssid']
+        profile.auth = pywifi.const.AUTH_ALG_OPEN
+        profile.akm.append(pywifi.const.AKM_TYPE_WPA2PSK)
+        profile.cipher = pywifi.const.CIPHER_TYPE_CCMP
+        profile.key = settings['psw']
+
+        wifi = pywifi.PyWiFi()
+        iface = wifi.interfaces()[0]
+        profile = iface.add_network_profile(profile)
+        iface.connect(profile)
+
         p.connect(int(settings['baud_rate']))
         u.connect(settings['ip'], settings['eid'], settings['pw'])
         u.loop_start()
