@@ -1,6 +1,8 @@
-from serial import Serial, SerialException
+from serial import Serial, SerialException, SerialTimeoutException
 from time import time, sleep
 import re
+import threading
+import queue
 
 
 class Printer:
@@ -11,6 +13,11 @@ class Printer:
         self.serial = None
         self.timeout = 3
         self.read_timeout = 1
+
+        self.updater_t = threading.Thread(target=self.read_data)
+        self.updater_t.setDaemon(True)
+
+        self._command_received = True
 
         self.t1 = '0.00'
         self.t2 = '0.00'
@@ -44,70 +51,51 @@ class Printer:
                 successful_responses += 1
                 self.serial.write(b"M105\n")
                 if successful_responses >= 3:
+                    self.updater_t.start()
                     return True
 
         self.serial.close()
         self.serial = None
         return False
 
-    def read_data(self):
-        if self.serial is None:
-            return False
+    #  Send a command to printer.
+    def sendCommand(self, command: str):
+        if self.serial is None or not self._command_received:
+            return 'fail'
+        command = command.encode()
+        if not command.endswith(b"\n"):
+            command += b"\n"
 
-        try:
-            self.serial.write(b'M105\nM114\n')
-        except SerialException:
-            return False
-
-        timeout_t = time() + self.read_timeout
-        results = [None, None, None]
+        timeout_t = time() + self.timeout
+        self.serial.write(command)
+        self._command_received = False
 
         while timeout_t > time():
-            line = self.serial.readline()
-            print(line)
-            # Temperature message. 'T:' for extruder and 'B:' for bed
-            if b"ok T:" in line or line.startswith(b"T:") or b"ok B:" in line or line.startswith(b"B:"):
-                extruder_temperature_matches = re.findall(b"T(\d*): ?([\d\.]+) ?\/?([\d\.]+)?", line)
-                results[0] = extruder_temperature_matches
-                bed_temperature_matches = re.findall(b"B: ?([\d\.]+) ?\/?([\d\.]+)?", line)
-                results[1] = bed_temperature_matches
+            if self._command_received:
+                return 'success'
+        self._command_received = True
+        return 'fail'
 
-            if b'X:' in line or line.startswith(b'X:'):
-                extruder_position = re.findall(b"X: ?([\d\.]+)Y: ?([\d\.]+)Z: ?([\d\.]+)E: ?([\d\.]+)", line)
-                results[2] = extruder_position
+    def read_data(self):
+        while True:
+            try:
+                line = self.serial.readline()
+            except:
+                continue
 
-        return self.data_packer(results)
+                if line.startswith(b"T:"):
+                    line = line.decode()
+                    res = re.findall("T: ?([\d\.]+) E: ?([\d\.]+) B: ?([\d\.]+)", line)
+                    self.t1 = res[0]
+                    self.e = res[1]
+                    self.t3 = res[2]
 
-    def data_packer(self, results):
-        print(results)
-        if results[0] is None or results[1] is None or results[2] is None:
-            return False
-        t1 = results[0][0][1]
-        t2 = b'NaN'
-        t3 = results[1][0][0]
-        x = results[2][0]
-        y = results[2][1]
-        z = results[2][2]
-        e = results[2][3]
-        result = {
-            'S': {
-                'T1': t1.decode(encoding='ascii'),
-                'T2': t2.decode(encoding='ascii'),
-                'T3': t3.decode(encoding='ascii')
-            },
-            'P': {
-                'X': x.decode(encoding='ascii'),
-                'Y': y.decode(encoding='ascii'),
-                'Z': z.decode(encoding='ascii'),
-                'E': e.decode(encoding='ascii')
-            },
-            'T': '00.00'
-        }
-        return result
+            if b"ok" in line:
+                self._command_received = True
 
 
 if __name__ == '__main__':
-    p = Printer('COM5', 250000)
+    p = Printer('COM5')
     ret = False
     while not ret:
         print('connecting\n'+str(ret))
