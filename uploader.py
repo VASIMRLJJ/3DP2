@@ -21,11 +21,14 @@ class Uploader:
         self.receiver_t = threading.Thread(target=self.receiver)
         self.receiver_t.setDaemon(True)
 
+        self.run = True
+
         self.dip = requests.get('https://ifconfig.co/ip').text.replace('\n', '')
 
     def __del__(self):
         if self.sock:
             self.sock.close()
+        self.run = False
 
     def connect(self, ip: str, eid: str, pw: str):
         self.ip = ip
@@ -80,7 +83,7 @@ class Uploader:
         return data
 
     def sender(self):
-        while True:
+        while self.run:
             if self.is_started:
                 self.lock.acquire()
                 self.sock.send(('STA'+json.dumps(self.get_data())).encode('ascii'))
@@ -93,7 +96,7 @@ class Uploader:
                 time.sleep(5)
 
     def receiver(self):
-        while True:
+        while self.run:
             rec = self.sock.recv(1024)
             if rec == b'STA':
                 self.is_started = True

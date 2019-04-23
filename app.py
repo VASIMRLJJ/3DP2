@@ -2,10 +2,12 @@ from flask import Flask, render_template, request
 from printer import Printer
 from uploader import Uploader
 import os
-import pywifi
+import platform
+import time
+from led import LED
 
 
-COM = 'COM5'
+COM = '/dev/ttyUSB0'
 
 app = Flask(__name__)
 p = Printer(COM)
@@ -39,11 +41,10 @@ def index():
 
 @app.route('/wizard')
 def wizard():
+    os.remove('settings.txt')
     global u, p
-    del p
-    del u
-    p = Printer(COM)
-    u = Uploader(p)
+    u.run = False
+    p.run = False
     return render_template('wizard.html')
 
 
@@ -87,19 +88,20 @@ if __name__ == '__main__':
     if os.path.isfile('settings.txt'):
         with open('settings.txt', 'r') as f:
             settings = eval(f.read())
-        profile = pywifi.Profile()
-        profile.ssid = settings['ssid']
-        profile.auth = pywifi.const.AUTH_ALG_OPEN
-        profile.akm.append(pywifi.const.AKM_TYPE_WPA2PSK)
-        profile.cipher = pywifi.const.CIPHER_TYPE_CCMP
-        profile.key = settings['psw']
-
-        wifi = pywifi.PyWiFi()
-        iface = wifi.interfaces()[0]
-        profile = iface.add_network_profile(profile)
-        iface.connect(profile)
-
-        p.connect(int(settings['baud_rate']))
-        u.connect(settings['ip'], settings['eid'], settings['pw'])
+        l = LED()
+        if platform.system() == 'Linux':
+            r = os.popen('nmcli conn show').read()
+            if not 'wlan0' in r:
+                r = os.popen('nmcli d wifi connect "'+settings['ssid']+'" password "'+settings['psw']+'" wlan0')
+                while not 'success' in r.read():
+                    time.sleep(1)
+        l.t = 0.2
+        while True:
+            ret1 = p.connect(int(settings['baud_rate']))
+            ret2 = u.connect(settings['ip'], settings['eid'], settings['pw'])
+            if ret1 and ret2:
+                break
+            time.sleep(5)
         u.loop_start()
-    app.run(host='127.0.0.1', port=80)
+        l.stop()
+    app.run(host='0.0.0.0', port=80)

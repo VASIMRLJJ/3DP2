@@ -2,7 +2,6 @@ from serial import Serial, SerialException, SerialTimeoutException
 from time import time, sleep
 import re
 import threading
-import queue
 
 
 class Printer:
@@ -13,6 +12,8 @@ class Printer:
         self.serial = None
         self.timeout = 3
         self.read_timeout = 1
+
+        self.run = True
 
         self.updater_t = threading.Thread(target=self.read_data)
         self.updater_t.setDaemon(True)
@@ -27,6 +28,7 @@ class Printer:
     def __del__(self):
         if self.serial is not None:
             self.serial.close()
+        self.run = False
 
     def connect(self, baud_rate=None):
         if baud_rate is not None:
@@ -77,7 +79,7 @@ class Printer:
         return 'fail'
 
     def read_data(self):
-        while True:
+        while self.run:
             try:
                 line = self.serial.readline()
             except:
