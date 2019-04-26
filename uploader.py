@@ -49,7 +49,8 @@ class Uploader:
         }
         self.sock.sendall(('AUT'+json.dumps(login)).encode('ascii'))
         rec = self.sock.recv(1024)
-        if rec == b'YES':
+        print(rec)
+        if rec == b'OK':
             return True
         else:
             self.sock.close()

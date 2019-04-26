@@ -6,8 +6,10 @@ import platform
 import time
 from led import LED
 
-
-COM = '/dev/ttyUSB0'
+if platform.system() == 'Linux':
+    COM = '/dev/ttyUSB0'
+else:
+    COM = 'COM4'
 
 app = Flask(__name__)
 p = Printer(COM)
