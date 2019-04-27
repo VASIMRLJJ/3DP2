@@ -9,7 +9,7 @@ from led import LED
 if platform.system() == 'Linux':
     COM = '/dev/ttyUSB0'
 else:
-    COM = 'COM4'
+    COM = 'COM6'
 
 app = Flask(__name__)
 p = Printer(COM)
@@ -37,17 +37,22 @@ def enter():
 def index():
     with open('settings.txt', 'w') as f:
         f.write(str(settings))
-    u.loop_start()
     return render_template('index.html')
 
 
-@app.route('/wizard')
-def wizard():
+@app.route('/setting')
+def setting():
+    return render_template('settings.html', **settings)
+
+
+@app.route('/reset')
+def reset():
     os.remove('settings.txt')
-    global u, p
-    u.run = False
-    p.run = False
-    return render_template('wizard.html')
+    if platform.system() == 'Linux':
+        os.system('reboot')
+    else:
+        exit()
+    return 200
 
 
 @app.route('/api/wifi_setting', methods=['GET', 'POST'])
@@ -104,6 +109,8 @@ if __name__ == '__main__':
             if ret1 and ret2:
                 break
             time.sleep(5)
-        u.loop_start()
         l.stop()
-    app.run(host='0.0.0.0', port=80)
+    if platform.system() == 'Linux':
+        app.run(host='0.0.0.0', port=80)
+    else:
+        app.run(host='127.0.0.1', port=80)

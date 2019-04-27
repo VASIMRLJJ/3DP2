@@ -13,7 +13,7 @@ class Printer:
         self.timeout = 3
         self.read_timeout = 1
 
-        self.run = True
+        self.run = False
 
         self.updater_t = threading.Thread(target=self.read_data)
         self.updater_t.setDaemon(True)
@@ -31,6 +31,9 @@ class Printer:
         self.run = False
 
     def connect(self, baud_rate=None):
+        if self.serial:
+            self.run = False
+            self.serial.close()
         if baud_rate is not None:
             self.baud_rate = baud_rate
         try:
@@ -53,6 +56,7 @@ class Printer:
                 successful_responses += 1
                 self.serial.write(b"M105\n")
                 if successful_responses >= 3:
+                    self.run = True
                     self.updater_t.start()
                     return True
 

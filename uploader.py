@@ -21,7 +21,7 @@ class Uploader:
         self.receiver_t = threading.Thread(target=self.receiver)
         self.receiver_t.setDaemon(True)
 
-        self.run = True
+        self.run = False
 
         self.dip = requests.get('https://ifconfig.co/ip').text.replace('\n', '')
 
@@ -31,6 +31,9 @@ class Uploader:
         self.run = False
 
     def connect(self, ip: str, eid: str, pw: str):
+        if self.sock:
+            self.run = False
+            self.sock.close()
         self.ip = ip
         self.eid = eid
         self.pw = pw
@@ -51,12 +54,14 @@ class Uploader:
         rec = self.sock.recv(1024)
         print(rec)
         if rec == b'OK':
+            self.loop_start()
             return True
         else:
             self.sock.close()
             return False
 
     def loop_start(self):
+        self.run = True
         self.receiver_t.start()
         self.sender_t.start()
 
