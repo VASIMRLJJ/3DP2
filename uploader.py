@@ -51,9 +51,10 @@ class Uploader:
             'PW': self.pw
         }
         self.sock.sendall(('AUT'+json.dumps(login)+'\n').encode('ascii'))
-        rec = self.sock.recv(1024)
+        rec = self.sock.recv(1024).decode('ascii')
+        rec.replace('\r\n', '')
         print(rec)
-        if rec == b'OK':
+        if rec == 'OK':
             self.loop_start()
             return True
         else:
@@ -108,10 +109,10 @@ class Uploader:
 
     def receiver(self):
         while self.run:
-            rec = self.sock.recv(1024)
-            if rec == b'STA':
+            rec = self.sock.recv(1024).decode('ascii').replace('\r\n', '')
+            if rec == 'STA':
                 self.is_started = True
-            if rec == b'STOP':
+            if rec == 'STOP':
                 self.is_started = False
             else:
                 self.lock.acquire()
@@ -120,7 +121,7 @@ class Uploader:
 
     def sendcmd(self, rec):
         try:
-            data2 = json.loads(rec.decode('ascii'))
+            data2 = json.loads(rec)
         except json.JSONDecodeError:
             return
         if 'EID' in data2.keys() and 'I' in data2.keys():
