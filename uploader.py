@@ -130,6 +130,7 @@ class Uploader:
                 data22 = {'EID': self.eid, 'RI': data2['I']}
                 self.sock.send((json.dumps(data22)+'\n').encode('ascii'))
                 rec2 = self.sock.recv(1024).decode('ascii').replace('\r\n', '')
+                print(rec2)
                 try:
                     data222 = json.loads(rec2)
                 except json.JSONDecodeError:
