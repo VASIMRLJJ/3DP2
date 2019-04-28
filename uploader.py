@@ -133,12 +133,15 @@ class Uploader:
                 try:
                     data222 = json.loads(rec2)
                 except json.JSONDecodeError:
+                    print('naj2')
                     return
                 if 'EID' in data222.keys() and 'IDE' in data222.keys():
+                    print(data222)
                     if data222['IDE'] != 'OK':
                         return
                     data33 = p.sendCommand(data2['I'])
                     data333 = {'EID': self.eid, 'I': data2['I'], 'IS': data33}
+                    print(data333)
                     self.sock.send((json.dumps(data333)+'\n').encode('ascii'))
 
 
