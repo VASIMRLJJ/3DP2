@@ -42,8 +42,10 @@
                <h3>填写WiFi账号密码<br/></h3>
                <p><label>WiFi名称：</label><input type="text" class="input" id="ssid" value="{{ ssid }}"/></p>
                <p><label>密码：</label><input type="password" class="input" id="psw" value="{{ psw }}"/></p>
+                   <input type="button" class="test" id="wifi_test" value="连接wifi">
+                    <lable id="wifi_test_status">未测试</lable><br>
                <div class="btn_nav">
-                  <input type="button" class="next right" value="下一项&raquo;" />
+                  <input type="button" class="next right" id="next1" value="下一步&raquo;" />
                </div>
             </div>
 			<div class="page">
@@ -87,21 +89,27 @@ $(function(){
 			$("#status li").removeClass("active").eq(i).addClass("active");
 		},
 		onBeforeSeek:function(event,i){
-			if(i==1){
-				var ssid = $("#ssid").val();
-				if(ssid==""){
-					alert("请输入用户名！");
-					return false;
-				}
-				var psw = $("#psw").val();
-				if(psw==""){
-				    alert("请输入密码！");
-					return false;
-				}
-				$.post("/api/wifi_setting", {ssid: ssid, psw: psw});
-			}
 		}
 	});
+	$("#wifi_test").click(function () {
+        var ssid = $("#ssid").val();
+        if(ssid==""){
+            alert("请输入用户名！");
+            return false;
+        }
+        var psw = $("#psw").val();
+        if(psw==""){
+            alert("请输入密码！");
+            return false;
+        }
+	    $("#wifi_test_status").html("正在连接");
+        $.post("/api/wifi_setting", {ssid: ssid, psw: psw}, function (data) {
+            alert(data);
+	        $("#wifi_test_status").html(data);
+           if(data == "连接失败")
+               return false;
+        });
+    });
 	$("#sub").click(function(){
         window.location.href = "/index"
 	});

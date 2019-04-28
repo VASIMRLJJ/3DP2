@@ -58,9 +58,15 @@ def reset():
 @app.route('/api/wifi_setting', methods=['GET', 'POST'])
 def wifi():
     if request.method == 'POST':
-        settings['ssid'] = request.form['ssid']
-        settings['psw'] = request.form['psw']
-        return 'success'
+        ssid = request.form['ssid']
+        psw = request.form['psw']
+        ret = wifi_connect(ssid, psw)
+        if ret:
+            settings['ssid'] = ssid
+            settings['psw'] = psw
+            return '连接成功'
+        else:
+            return '连接失败'
 
 
 @app.route('/api/printer_test', methods=['GET', 'POST'])
@@ -91,17 +97,28 @@ def server_test():
             return '连接成功'
 
 
+def wifi_connect(ssid: str, psw: str):
+    if platform.system() == 'Linux':
+        r = os.popen('nmcli conn show').read()
+        if not 'wlan0' in r:
+            r = os.popen('nmcli d wifi connect "' + ssid + '" password "' + psw + '" wlan0')
+            timeout_t = time.time() + 10
+            while timeout_t > time.time():
+                if 'success' in r.read():
+                    return True
+            return False
+    return True
+
+
 if __name__ == '__main__':
     if os.path.isfile('settings.txt'):
         with open('settings.txt', 'r') as f:
             settings = eval(f.read())
         l = LED()
-        if platform.system() == 'Linux':
-            r = os.popen('nmcli conn show').read()
-            if not 'wlan0' in r:
-                r = os.popen('nmcli d wifi connect "'+settings['ssid']+'" password "'+settings['psw']+'" wlan0')
-                while not 'success' in r.read():
-                    time.sleep(1)
+        while True:
+            ret = wifi_connect(settings['ssid'], settings['psw'])
+            if ret:
+                break
         l.t = 0.2
         while True:
             ret1 = p.connect(int(settings['baud_rate']))
