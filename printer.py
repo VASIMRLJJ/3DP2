@@ -89,17 +89,14 @@ class Printer:
             except:
                 continue
 
-            if line.startswith(b"T:"):
+            if line.startswith(b"T0:") or line.startswith(b"T1:"):
                 line1 = line.decode()
                 if 'B:' in line1:
-                    res = re.findall("T: ?([\d\.]+) E: ?([\d\.]+) B: ?([\d\.]+)", line1)
-                    self.t1 = res[0][0]
-                    self.e = res[0][1]
-                    self.t3 = res[0][2]
+                    res = re.findall("T0: ?([\d\.]+)", line1)
+                    self.t3 = res[0][0]
                 else:
-                    res = re.findall("T: ?([\d\.]+) E: ?([\d\.]+)", line1)
+                    res = re.findall("T1: ?([\d\.]+)", line1)
                     self.t1 = res[0][0]
-                    self.e = res[0][1]
 
             if b"ok" in line:
                 self._command_received = True
