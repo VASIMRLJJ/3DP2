@@ -23,7 +23,7 @@ class Uploader:
 
         self.run = False
 
-        self.dip = requests.get('https://ifconfig.co/ip').text.replace('\n', '')
+        self.dip = requests.get('https://ifconfig.co/ip', timeout=3).text.replace('\n', '')
 
     def __del__(self):
         if self.sock:
