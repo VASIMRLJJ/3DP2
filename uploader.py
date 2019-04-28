@@ -129,9 +129,9 @@ class Uploader:
             if data2['EID'] == self.eid:
                 data22 = {'EID': self.eid, 'RI': data2['I']}
                 self.sock.send((json.dumps(data22)+'\n').encode('ascii'))
-                rec2 = self.sock.recv(1024)
+                rec2 = self.sock.recv(1024).decode('ascii').replace('\r\n', '')
                 try:
-                    data222 = json.loads(rec2.decode('ascii'))
+                    data222 = json.loads(rec2)
                 except json.JSONDecodeError:
                     return
                 if 'EID' in data222.keys() and 'IDE' in data222.keys():
