@@ -123,6 +123,7 @@ class Uploader:
         try:
             data2 = json.loads(rec)
         except json.JSONDecodeError:
+            print('naj')
             return
         if 'EID' in data2.keys() and 'I' in data2.keys():
             if data2['EID'] == self.eid:
