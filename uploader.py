@@ -127,10 +127,10 @@ class Uploader:
             return
         if 'EID' in data2.keys() and 'I' in data2.keys():
             if data2['EID'] == self.eid:
-                    data33 = p.sendCommand(data2['I'])
-                    data333 = {'EID': self.eid, 'I': data2['I'], 'IS': data33}
-                    print(data333)
-                    self.sock.send((json.dumps(data333)+'\n').encode('ascii'))
+                data33 = p.sendCommand(data2['I'])
+                data333 = {'EID': self.eid, 'I': data2['I'], 'IS': data33}
+                print(data333)
+                self.sock.send((json.dumps(data333)+'\n').encode('ascii'))
 
 
 if __name__ == '__main__':
