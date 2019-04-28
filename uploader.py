@@ -50,7 +50,7 @@ class Uploader:
             'EID': self.eid,
             'PW': self.pw
         }
-        self.sock.sendall(('AUT'+json.dumps(login)).encode('ascii'))
+        self.sock.sendall(('AUT'+json.dumps(login)+'\n').encode('ascii'))
         rec = self.sock.recv(1024)
         print(rec)
         if rec == b'OK':
@@ -97,12 +97,12 @@ class Uploader:
         while self.run:
             if self.is_started:
                 self.lock.acquire()
-                self.sock.send(('STA'+json.dumps(self.get_data())).encode('ascii'))
+                self.sock.send(('STA'+json.dumps(self.get_data())+'\n').encode('ascii'))
                 self.lock.release()
                 time.sleep(1)
             else:
                 self.lock.acquire()
-                self.sock.send(b'{}')
+                self.sock.send(b'{}\n')
                 self.lock.release()
                 time.sleep(5)
 
@@ -126,7 +126,7 @@ class Uploader:
         if 'EID' in data2.keys() and 'I' in data2.keys():
             if data2['EID'] == self.eid:
                 data22 = {'EID': self.eid, 'RI': data2['I']}
-                self.sock.send(json.dumps(data22).encode('ascii'))
+                self.sock.send((json.dumps(data22)+'\n').encode('ascii'))
                 rec2 = self.sock.recv(1024)
                 try:
                     data222 = json.loads(rec2.decode('ascii'))
@@ -137,7 +137,7 @@ class Uploader:
                         return
                     data33 = p.sendCommand(data2['I'])
                     data333 = {'EID': self.eid, 'I': data2['I'], 'IS': data33}
-                    self.sock.send(json.dumps(data333).encode('ascii'))
+                    self.sock.send((json.dumps(data333)+'\n').encode('ascii'))
 
 
 if __name__ == '__main__':
