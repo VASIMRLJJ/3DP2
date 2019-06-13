@@ -50,7 +50,7 @@ class Uploader:
             'EID': self.eid,
             'PW': self.pw
         }
-        self.sock.sendall(('AUT'+json.dumps(login)+'\n').encode('ascii'))
+        self.sock.sendall(('AUT'+json.dumps(login)+'END'+'\n').encode('ascii'))
         rec = self.sock.recv(1024).decode('ascii')
         rec.replace('\r\n', '')
         print(rec)
@@ -98,7 +98,7 @@ class Uploader:
         while self.run:
             if self.is_started:
                 self.lock.acquire()
-                self.sock.send(('STA'+json.dumps(self.get_data())+'\n').encode('ascii'))
+                self.sock.send(('STA'+json.dumps(self.get_data())+'END'+'\n').encode('ascii'))
                 self.lock.release()
                 time.sleep(1)
             else:

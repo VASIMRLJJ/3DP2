@@ -5,9 +5,15 @@ import os
 import platform
 import time
 from led import LED
+import glob
 
 if platform.system() == 'Linux':
-    COM = '/dev/ttyUSB0'
+    COM = glob.glob(r'/dev/ttyUSB*')
+    COM.append(glob.glob(r'/dev/ttyACM*'))
+    if len(COM) == 0:
+        COM = '/dev/ttyUSB0'
+    else:
+        COM = COM[0]
 else:
     COM = 'COM6'
 
@@ -37,7 +43,10 @@ def enter():
 def index():
     with open('settings.txt', 'w') as f:
         f.write(str(settings))
-    return render_template('index.html')
+    if platform.system() == 'Linux':
+        os.system('reboot')
+    else:
+        return render_template('index.html')
 
 
 @app.route('/setting')
@@ -73,6 +82,15 @@ def wifi():
 def printer_test():
     if request.method == 'POST':
         baud_rate = request.form['baud_rate']
+        if platform.system() == 'Linux':
+            global COM
+            COM = glob.glob(r'/dev/ttyUSB*')
+            COM.append(glob.glob(r'/dev/ttyACM*'))
+            if len(COM) == 0:
+                COM = '/dev/ttyUSB0'
+            else:
+                COM = COM[0]
+            p.port = COM
         ret = p.connect(int(baud_rate))
         if not ret:
             return '连接失败'
