@@ -90,7 +90,7 @@ def printer_test():
             if len(COM) == 0:
                 COM = '/dev/ttyUSB0'
             else:
-                COM = COM[0]
+                COM = COM[0][0]
             p.port = COM
         ret = p.connect(int(baud_rate))
         if not ret:
