@@ -13,7 +13,7 @@ if platform.system() == 'Linux':
     if len(COM) == 0:
         COM = '/dev/ttyUSB0'
     else:
-        COM = COM[0]
+        COM = COM[0][0]
 else:
     COM = 'COM6'
 
