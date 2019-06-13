@@ -86,6 +86,7 @@ def printer_test():
             global COM
             COM = glob.glob(r'/dev/ttyUSB*')
             COM.append(glob.glob(r'/dev/ttyACM*'))
+            print(COM)
             if len(COM) == 0:
                 COM = '/dev/ttyUSB0'
             else:
