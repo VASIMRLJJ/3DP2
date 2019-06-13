@@ -147,5 +147,5 @@ if __name__ == '__main__':
             ret2 = u.connect(settings['ip'], settings['eid'], settings['pw'])
             if ret1 and ret2:
                 break
-            time.sleep(5)
+            time.sleep(10)
         l.stop()
