@@ -8,12 +8,11 @@ from led import LED
 import glob
 
 if platform.system() == 'Linux':
-    COM = glob.glob(r'/dev/ttyUSB*')
-    COM.append(glob.glob(r'/dev/ttyACM*'))
+    COM = glob.glob(r'/dev/ttyUSB*') + glob.glob(r'/dev/ttyACM*')
     if len(COM) == 0:
         COM = '/dev/ttyUSB0'
     else:
-        COM = COM[0][0]
+        COM = COM[0]
 else:
     COM = 'COM6'
 
@@ -84,13 +83,12 @@ def printer_test():
         baud_rate = request.form['baud_rate']
         if platform.system() == 'Linux':
             global COM
-            COM = glob.glob(r'/dev/ttyUSB*')
-            COM.append(glob.glob(r'/dev/ttyACM*'))
+            COM = glob.glob(r'/dev/ttyUSB*') + glob.glob(r'/dev/ttyACM*')
             print(COM)
             if len(COM) == 0:
                 COM = '/dev/ttyUSB0'
             else:
-                COM = COM[0][0]
+                COM = COM[0]
             p.port = COM
         ret = p.connect(int(baud_rate))
         if not ret:
