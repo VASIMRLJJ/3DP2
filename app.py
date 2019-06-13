@@ -129,6 +129,10 @@ def wifi_connect(ssid: str, psw: str):
 
 
 if __name__ == '__main__':
+    if platform.system() == 'Linux':
+        app.run(host='0.0.0.0', port=80)
+    else:
+        app.run(host='127.0.0.1', port=80)
     if os.path.isfile('settings.txt'):
         with open('settings.txt', 'r') as f:
             settings = eval(f.read())
@@ -145,7 +149,3 @@ if __name__ == '__main__':
                 break
             time.sleep(5)
         l.stop()
-    if platform.system() == 'Linux':
-        app.run(host='0.0.0.0', port=80)
-    else:
-        app.run(host='127.0.0.1', port=80)
