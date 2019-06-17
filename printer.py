@@ -19,6 +19,8 @@ class Printer:
         self.updater_t.setDaemon(True)
 
         self._command_received = True
+        self.t_received = True
+        self.p_received = True
 
         self.t1 = '0.00'
         self.t2 = '0.00'
@@ -58,6 +60,8 @@ class Printer:
                 if successful_responses >= 3:
                     self.run = True
                     self.updater_t.start()
+                    self.sendCommand('M105')
+                    self.sendCommand('M114')
                     return True
 
         self.serial.close()
@@ -97,6 +101,7 @@ class Printer:
                 else:
                     res = re.findall("T1: ?([\d\.]+)", line1)
                     self.t1 = res[0][0]
+                self.sendCommand('M105')
 
             if b"ok" in line:
                 self._command_received = True
