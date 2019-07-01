@@ -25,6 +25,10 @@ class Printer:
         self.t1 = '0.00'
         self.t2 = '0.00'
         self.t3 = '0.00'
+
+        self.x = '0.00'
+        self.y = '0.00'
+        self.z = '0.00'
         self.e = '0.00'
 
     def __del__(self):
@@ -93,15 +97,30 @@ class Printer:
             except:
                 continue
 
-            if line.startswith(b"T0:") or line.startswith(b"T1:"):
+            if line.startswith(b"ok T"):
                 line1 = line.decode()
                 if 'B:' in line1:
-                    res = re.findall("T0: ?([\d\.]+)", line1)
+                    res = re.findall("B: ?([\d\.]+)", line1)
                     self.t3 = res[0][0]
-                else:
-                    res = re.findall("T1: ?([\d\.]+)", line1)
-                    self.t1 = res[0][0]
+                    if 'T:' in line1:
+                        res = re.findall("T: ?([\d\.]+)", line1)
+                        self.t1 = res[0][0]
+                    else:
+                        res = re.findall("T0: ?([\d\.]+)", line1)
+                        self.t1 = res[0][0]
                 self.sendCommand('M105')
+
+            if line.startswith(b"ok C:"):
+                line1 = line.decode()
+                res = re.findall("X: ?([\d\.]+)", line1)
+                self.x = res[0][0]
+                res = re.findall("Y: ?([\d\.]+)", line1)
+                self.y = res[0][0]
+                res = re.findall("Z: ?([\d\.]+)", line1)
+                self.z = res[0][0]
+                res = re.findall("E: ?([\d\.]+)", line1)
+                self.e = res[0][0]
+                self.sendCommand('M114')
 
             if b"ok" in line:
                 self._command_received = True
