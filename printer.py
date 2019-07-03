@@ -10,7 +10,7 @@ class Printer:
         self.baud_rate = 115200
         self.name = 'unknown'
         self.serial = None
-        self.timeout = 3
+        self.timeout = 5
         self.read_timeout = 1
 
         self.run = False
@@ -47,7 +47,7 @@ class Printer:
         except SerialException as e:
             print(str(e))
             return False
-        sleep(3)  # CURA:Ensure that we are not talking to the boot loader. 1.5 seconds seems to be the magic number
+        sleep(10)  # CURA:Ensure that we are not talking to the boot loader. 1.5 seconds seems to be the magic number
         successful_responses = 0
 
         self.serial.write(b"\n")  # CURA:Ensure we clear out previous responses
