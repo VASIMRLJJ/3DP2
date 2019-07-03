@@ -101,25 +101,25 @@ class Printer:
                 line1 = line.decode()
                 if 'B:' in line1:
                     res = re.findall("B: ?([\d\.]+)", line1)
-                    self.t3 = res[0][0]
+                    self.t3 = res[0]
                     if 'T:' in line1:
                         res = re.findall("T: ?([\d\.]+)", line1)
-                        self.t1 = res[0][0]
+                        self.t1 = res[0]
                     else:
                         res = re.findall("T0: ?([\d\.]+)", line1)
-                        self.t1 = res[0][0]
+                        self.t1 = res[0]
                 self.sendCommand('M105')
 
             if line.startswith(b"ok C:"):
                 line1 = line.decode()
                 res = re.findall("X: ?([\d\.]+)", line1)
-                self.x = res[0][0]
+                self.x = res[0]
                 res = re.findall("Y: ?([\d\.]+)", line1)
-                self.y = res[0][0]
+                self.y = res[0]
                 res = re.findall("Z: ?([\d\.]+)", line1)
-                self.z = res[0][0]
+                self.z = res[0]
                 res = re.findall("E: ?([\d\.]+)", line1)
-                self.e = res[0][0]
+                self.e = res[0]
                 self.sendCommand('M114')
 
             if b"ok" in line:
