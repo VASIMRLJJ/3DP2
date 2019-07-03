@@ -111,7 +111,7 @@ class Printer:
                         self.t1 = res[0]
                 self.sendCommand('M105')
 
-            if line.startswith(b"ok C:"):
+            if line.startswith(b"X:"):
                 line1 = line.decode()
                 res = re.findall("X: ?([\d\.]+)", line1)
                 self.x = res[0]
