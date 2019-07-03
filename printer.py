@@ -94,6 +94,7 @@ class Printer:
         while self.run:
             try:
                 line = self.serial.readline()
+                
             except:
                 continue
 
