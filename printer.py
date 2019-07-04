@@ -10,7 +10,7 @@ class Printer:
         self.baud_rate = 115200
         self.name = 'unknown'
         self.serial = None
-        self.timeout = 5
+        self.timeout = 3
         self.read_timeout = 1
 
         self.run = False
@@ -98,7 +98,7 @@ class Printer:
             except:
                 continue
 
-            if line.startswith(b"ok T"):
+            if line.startswith(b"ok T") or line.startswith(b"T:"):
                 line1 = line.decode()
                 if 'B:' in line1:
                     res = re.findall("B: ?([\d\.]+)", line1)
@@ -109,7 +109,8 @@ class Printer:
                     else:
                         res = re.findall("T0: ?([\d\.]+)", line1)
                         self.t1 = res[0]
-                self.sendCommand('M105')
+                if line.startswith(b"ok T"):
+                    self.sendCommand('M105')
 
             if line.startswith(b"X:"):
                 line1 = line.decode()
