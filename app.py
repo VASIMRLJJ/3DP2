@@ -25,8 +25,7 @@ settings = {
     'psw': '',
     'ip': '',
     'eid': '',
-    'pw': '',
-    'baud_rate': ''
+    'pw': ''
 }
 
 
@@ -77,25 +76,25 @@ def wifi():
             return '连接失败'
 
 
-@app.route('/api/printer_test', methods=['GET', 'POST'])
-def printer_test():
-    if request.method == 'POST':
-        baud_rate = request.form['baud_rate']
-        if platform.system() == 'Linux':
-            global COM
-            COM = glob.glob(r'/dev/ttyUSB*') + glob.glob(r'/dev/ttyACM*')
-            print(COM)
-            if len(COM) == 0:
-                COM = '/dev/ttyUSB0'
-            else:
-                COM = COM[0]
-            p.port = COM
-        ret = p.connect(int(baud_rate))
-        if not ret:
-            return '连接失败'
-        else:
-            settings['baud_rate'] = baud_rate
-            return '连接成功'
+# @app.route('/api/printer_test', methods=['GET', 'POST'])
+# def printer_test():
+#     if request.method == 'POST':
+#         baud_rate = request.form['baud_rate']
+#         if platform.system() == 'Linux':
+#             global COM
+#             COM = glob.glob(r'/dev/ttyUSB*') + glob.glob(r'/dev/ttyACM*')
+#             print(COM)
+#             if len(COM) == 0:
+#                 COM = '/dev/ttyUSB0'
+#             else:
+#                 COM = COM[0]
+#             p.port = COM
+#         ret = p.connect(int(baud_rate))
+#         if not ret:
+#             return '连接失败'
+#         else:
+#             settings['baud_rate'] = baud_rate
+#             return '连接成功'
 
 
 @app.route('/api/server_test', methods=['GET', 'POST'])
@@ -136,13 +135,21 @@ if __name__ == '__main__':
             ret = wifi_connect(settings['ssid'], settings['psw'])
             if ret:
                 break
-        l.t = 0.2
+        l.t = 0.5
         while True:
-            ret1 = p.connect(int(settings['baud_rate']))
-            ret2 = u.connect(settings['ip'], settings['eid'], settings['pw'])
-            if ret1 and ret2:
+            ret = p.connect(115200)
+            if ret:
                 break
-            time.sleep(10)
+            ret = p.connect(250000)
+            if ret:
+                break
+            time.sleep(5)
+        l.t = 0.1
+        while True:
+            ret = u.connect(settings['ip'], settings['eid'], settings['pw'])
+            if ret:
+                break
+            time.sleep(5)
         l.stop()
     if platform.system() == 'Linux':
         app.run(host='0.0.0.0', port=80)
