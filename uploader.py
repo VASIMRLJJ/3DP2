@@ -84,12 +84,12 @@ class Uploader:
                     'T3': self.p.t3
                 },
                 'P': {
-                    'X': '00.00',
-                    'Y': '00.00',
-                    'Z': '00.00',
-                    'E': '00.00'
+                    'X': self.p.x,
+                    'Y': self.p.y,
+                    'Z': self.p.z,
+                    'E': self.p.e
                 },
-                'T': self.p.e
+                'T': '00.00'
             }
         }
         return data

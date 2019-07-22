@@ -6,7 +6,7 @@ import platform
 
 class LED:
     def __init__(self):
-        self.t = 0.5
+        self.t = 1.0
         self.flash_t = threading.Thread(target=self.flash)
         self.flash_t.setDaemon(True)
         self.run = True
