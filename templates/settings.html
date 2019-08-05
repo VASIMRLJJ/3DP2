@@ -28,7 +28,7 @@
 
 <div id="main">
    <h2 class="top_title">云盒激活向导</h2>
-   <p style="height:24px; line-height:24px; margin:16px">开始本向导前，请务必保证打印机已连接，网络畅通</p>
+   <p style="height:24px; line-height:24px; margin:16px">开始本向导前，请连接</p>
    <form action="#" method="post">
 	<div id="wizard">
 		<ul id="status">
@@ -129,14 +129,14 @@ $(function(){
 	        alert("请输入设备密码");
 	        return false;
         }
-	    $("#server_test_status").html("正在更改");
+	  {#  $("#server_test_status").html("正在更改");
         $.post("api/server_test", {ip: ip, eid: eid, pw: pw}, function (data) {
 	        $("#server_test_status").html(data.replace("连接","更改"));
             alert(data);
 
            if(data == "连接失败")
                return false;
-        });
+        });#}
     });
     $("#printer_test").click(function () {
         let baud_rate = $("#bs").val();

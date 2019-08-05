@@ -16,7 +16,7 @@ class Printer:
         self.run = False
 
         self.updater_t = threading.Thread(target=self.read_data)
-        self.updater_t.setDaemon(True)
+        self.updater_t.setDaemon(True)  #守护线程
 
         self._command_received = True
         self.t_received = True
@@ -37,13 +37,14 @@ class Printer:
         self.run = False
 
     def connect(self, baud_rate=None):
+        # 初始化
         if self.serial:
             self.run = False
             self.serial.close()
         if baud_rate is not None:
             self.baud_rate = baud_rate
         try:
-            self.serial = Serial(self.port, self.baud_rate, timeout=self.timeout, writeTimeout=self.timeout)
+            self.serial = Serial(self.port, self.baud_rate, timeout=self.timeout, writeTimeout=self.timeout)  #获取串口信息
         except SerialException as e:
             print(str(e))
             return False
@@ -72,7 +73,7 @@ class Printer:
         self.serial = None
         return False
 
-    #  Send a command to printer.
+    # Send a command to printer.接收平台的指令发送给打印机
     def sendCommand(self, command: str):
         if self.serial is None or not self._command_received:
             return 'fail'
@@ -90,6 +91,7 @@ class Printer:
         self._command_received = True
         return 'fail'
 
+    #接收打印机数据，并解析
     def read_data(self):
         while self.run:
             try:
