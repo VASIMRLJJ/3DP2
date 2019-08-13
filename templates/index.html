@@ -29,6 +29,7 @@
   <!--//stylesheets-->
 <link href="http://fonts.googleapis.com/css?family=Lato:400,700,900" rel="stylesheet">
 <link href="http://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
+<script type="text/javascript" src="../static/js/jquery.min.js"></script>
 </head>
 
 <body>
@@ -49,6 +50,9 @@
 		  	 <div class="view-buttn mt-lg-5 mt-md-4 mt-3">
             <a href="/setting" >设置页面</a>
              </div>
+             <div class="view-buttn mt-lg-5 mt-md-4 mt-3" id="btn2">
+             <a>重启云盒</a>
+             <div>
 		  	 <div class="view-buttn mt-lg-5 mt-md-4 mt-3">
             <a href="/reset" >恢复出厂设置</a>
              </div>
@@ -58,4 +62,29 @@
     <!-- //banner -->
 	<!-- about -->
 </body>
+<script>
+//    $(function(){
+//        $('btn2').onclick(function(){
+//            $.ajax({
+//                url:'reboot',
+//                data:{
+//
+//                },
+//                type:'GET',
+//                success:function(){
+//                //    alert("重启成功")
+//                },
+//                error:function(){
+//                 //   alert("重启失败")
+//                },
+//            });
+//        });
+//        });
+    $("#btn2").click(function () {
+        $.post("reboot", function () {
+
+        });
+    })
+
+</script>
 </html>

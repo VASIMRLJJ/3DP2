@@ -99,6 +99,7 @@ class Uploader:
             if self.is_started:
                 self.lock.acquire()
                 self.sock.send(('STA'+json.dumps(self.get_data())+'END'+'\n').encode('ascii'))
+                print(('STA'+json.dumps(self.get_data())+'END'+'\n').encode('ascii'))
                 self.lock.release()
                 time.sleep(1)
             else:

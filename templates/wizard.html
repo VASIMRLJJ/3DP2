@@ -28,13 +28,13 @@
 
 <div id="main">
    <h2 class="top_title">云盒激活向导</h2>
-   <p style="height:24px; line-height:24px; margin:16px">开始本向导前，请务必保证打印机已连接，网络畅通</p>
+   {#<p style="height:24px; line-height:24px; margin:16px">开始本向导前，请务必保证打印机已连接，网络畅通</p>#}
    <form action="#" method="post">
 	<div id="wizard">
 		<ul id="status">
 			<li class="active"><strong>1.</strong>填写WiFi信息</li>
 {#			<li><strong>2.</strong>连接设备</li>#}
-			<li><strong>2.</strong>连接服务器</li>
+			<li><strong>2.</strong>配置平台和设备信息</li>
 		</ul>
 
 		<div class="items">
@@ -70,8 +70,8 @@
                <p><label>IP地址：</label><input type="text" class="input" id="ip" /></p>
                <p><label>设备编号（EID）：</label><input type="text" id="eid" class="input" /></p>
                <p><label>设备密码：</label><input type="text" class="input" id="pw" /></p>
-                   <input type="button" class="test" id="server_test" value="连接服务器">
-                    <lable id="server_test_status">未测试</lable><br>
+                   {# <input type="button" class="test" id="server_test" value="连接服务器">#}
+                   {# <lable id="server_test_status">未测试</lable><br>#}
                <div class="btn_nav">
                   <input type="button" class="prev" style="float:left" value="&laquo;上一步" />
                   <input type="button" class="next right" id="sub" value="完成" />
@@ -83,9 +83,9 @@
 </div>
 
 <script type="text/javascript">
-    $("#next1").hide();
-    $("#next2").hide();
-    $("#sub").hide();
+    {#$("#next1").hide();#}
+  {#  $("#next2").hide();
+    $("#sub").hide();#}
 
 $(function(){
 	$("#wizard").scrollable({
@@ -106,18 +106,41 @@ $(function(){
             alert("请输入密码！");
             return false;
         }
-	    $("#wifi_test_status").html("正在连接");
+	  {#  $("#wifi_test_status").html("正在连接");#}
         $.post("/api/wifi_setting", {ssid: ssid, psw: psw}, function (data) {
             alert(data);
 	        $("#wifi_test_status").html(data);
            if(data == "连接失败")
                return false;
-           else
-               $("#next1").show();
+          {# else
+               $("#next1").show();#}
         });
     });
 	$("#sub").click(function(){
-        window.location.href = "/index"
+		let ip = $("#ip").val();
+	    if(ip == ""){
+	        alert("请输入IP");
+	        return false;
+        }
+	    let eid = $("#eid").val();
+	    if(eid == ""){
+	        alert("请输入设备编号");
+	        return false;
+        }
+	    let pw = $("#pw").val();
+	    if(pw == ""){
+	        alert("请输入设备密码");
+	        return false;
+        }
+	  $.post("api/server_save", {ip: ip, eid: eid, pw: pw}, function (data) {
+         alert(data);
+	  $("#server_test_status").html(data);
+          if(data == "连接失败")
+               return false;
+           else
+               $("#sub").show();
+        });
+        window.location.href = "index"
 	});
 	$("#server_test").click(function () {
 	    let ip = $("#ip").val();
@@ -135,15 +158,9 @@ $(function(){
 	        alert("请输入设备密码");
 	        return false;
         }
-	    $("#server_test_status").html("正在连接");
-        $.post("api/server_test", {ip: ip, eid: eid, pw: pw}, function (data) {
-            alert(data);
-	        $("#server_test_status").html(data);
-           if(data == "连接失败")
-               return false;
-           else
-               $("#sub").show();
-        });
+	   $("#server_test_status").html("正在连接");
+	 
+      
     });
     $("#printer_test").click(function () {
         let baud_rate = $("#bs").val();
