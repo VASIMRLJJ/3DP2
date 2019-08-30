@@ -8,9 +8,9 @@ import time
 
 class Uploader:
     def __init__(self, p: Printer):
-        self.ip = ''
-        self.eid = ''
-        self.pw = ''
+        self.ip = ''  # 设备的ip
+        self.eid = ''  # 设备id
+        self.pw = ''  # 设备密码
         self.is_started = False
         self.lock = threading.Lock()
         self.p = p
